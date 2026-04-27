@@ -4,7 +4,7 @@
 // =============================================================
 
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';h
+import { prisma } from '@/lib/db';
 import { requireAuth, getOrgId, ok, err } from '@/lib/api-helpers';
 
 export async function GET(req: NextRequest) {
