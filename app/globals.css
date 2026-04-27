@@ -1,0 +1,173 @@
+/* Fonte Inter carregada via next/font no layout.tsx (sem CDN externo) */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design System: Dalva ── */
+:root {
+  --dalva-bg: #0B0F1A;
+  --dalva-surface: #111827;
+  --dalva-card: #1A2035;
+  --dalva-border: rgba(148, 163, 184, 0.12);
+  --dalva-gold: #C9A84C;
+  --dalva-gold-soft: #D4B968;
+  --dalva-text-primary: #E2E8F0;
+  --dalva-text-secondary: #94A3B8;
+  --dalva-text-muted: #64748B;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--dalva-bg);
+  color: var(--dalva-text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.35);
+}
+
+/* ── Glass Card ── */
+@layer components {
+  .glass-card {
+    @apply bg-dalva-card/80 backdrop-blur-xl border border-dalva-border rounded-2xl;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300;
+  }
+
+  .glass-card-hover:hover {
+    @apply border-dalva-border-hover;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .glass-sidebar {
+    @apply bg-dalva-surface/95 backdrop-blur-2xl border-r border-dalva-border;
+  }
+
+  /* ── Badge ── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  /* ── Gold Gradient Text ── */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #C9A84C 0%, #E8D48B 50%, #C9A84C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Dot Indicator ── */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  /* ── Kanban column ── */
+  .kanban-column {
+    @apply flex flex-col min-w-[300px] max-w-[320px] rounded-2xl p-1;
+    background: rgba(17, 24, 39, 0.6);
+  }
+
+  /* ── Chat bubble ── */
+  .chat-bubble-lead {
+    @apply max-w-[75%] rounded-2xl rounded-bl-md px-4 py-3 text-sm;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .chat-bubble-ia {
+    @apply max-w-[75%] rounded-2xl rounded-br-md px-4 py-3 text-sm;
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+  }
+
+  .chat-bubble-advogado {
+    @apply max-w-[75%] rounded-2xl rounded-br-md px-4 py-3 text-sm;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+  }
+}
+
+/* ── Animations ── */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.4s ease-out forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.3s ease-out forwards;
+}
+
+/* Staggered children animations */
+.stagger-children > * {
+  opacity: 0;
+  animation: slideInUp 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* ── Selection ── */
+::selection {
+  background: rgba(201, 168, 76, 0.3);
+  color: #E2E8F0;
+}

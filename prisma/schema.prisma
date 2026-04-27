@@ -1,0 +1,86 @@
+// =============================================================
+// DALVA — Banco de Dados Multi-tenant
+// =============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// 1. ORGANIZATIONS (Os Escritórios de Advocacia)
+// -----------------------------------------------------------------------------
+model Organization {
+  id                 String    @id @default(cuid())
+  name               String
+  documentId         String?   // CNPJ / CPF
+  
+  // Status de Assinatura (SaaS)
+  subscriptionId     String?
+  subscriptionStatus String?   @default("active") // active, past_due, canceled
+  
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  
+  // Relações Multi-tenant
+  users              User[]
+  leads              Lead[]
+}
+
+// -----------------------------------------------------------------------------
+// 2. USERS (Advogados e Administradores)
+// -----------------------------------------------------------------------------
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  passwordHash   String
+  role           Role      @default(LAWYER)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Isolamento (A qual escritório este advogado pertence?)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  SUPER_ADMIN    // Dono da Plataforma Dalva
+  TENANT_ADMIN   // Sócio do Escritório
+  LAWYER         // Advogado Padrão
+}
+
+// -----------------------------------------------------------------------------
+// 3. LEADS (Clientes captados via WhatsApp)
+// -----------------------------------------------------------------------------
+model Lead {
+  id             String    @id @default(cuid())
+  name           String
+  phone          String
+  niche          String    // Trabalhista, Previdenciário, Consumidor
+  status         LeadStatus @default(NOVO)
+  score          Int       @default(0) // Qualificação da IA (0 a 100)
+  
+  aiSummary      String?   // Resumo do caso gerado pela IA
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Isolamento (De qual escritório é este Lead?)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+enum LeadStatus {
+  NOVO
+  QUALIFICADO
+  EM_ATENDIMENTO
+  CONTRATO_ENVIADO
+  FECHADO
+  PERDIDO
+}
