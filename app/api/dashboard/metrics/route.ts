@@ -4,7 +4,7 @@
 // =============================================================
 
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/db';h
 import { requireAuth, getOrgId, ok, err } from '@/lib/api-helpers';
 
 export async function GET(req: NextRequest) {
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
   });
 
   // Formatar dados por nicho para o gráfico de pizza
-  const nichos = leadsPorNicho.map(n => ({
+  const nichos = leadsPorNicho.map((n: any) => ({
     nome: n.niche,
     quantidade: n._count.niche,
     cor: n.niche === 'Trabalhista' ? '#C5A028'
