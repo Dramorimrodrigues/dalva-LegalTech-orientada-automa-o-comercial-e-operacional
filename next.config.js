@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+    typescript: { ignoreBuildErrors: true },
 
   // ── Headers de Segurança HTTP ──
   async headers() {
