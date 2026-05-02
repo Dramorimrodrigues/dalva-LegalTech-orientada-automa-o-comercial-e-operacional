@@ -44,32 +44,70 @@ export const authOptions: NextAuthOptions = {
           throw new Error(`Muitas tentativas. Tente novamente em ${minutes} minuto(s).`);
         }
 
-        // 3. Verificar credenciais via variáveis de ambiente
-        // PRODUÇÃO: Substituir por consulta ao PostgreSQL
-        const adminEmail = process.env.ADMIN_EMAIL;
-        const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+        // 3. Buscar usuário no PostgreSQL
+        try {
+          const { prisma } = require('./db');
 
-        if (!adminEmail || !adminPasswordHash) {
-          throw new Error('Configuração de autenticação incompleta. Verifique o .env.local');
+          const user = await prisma.user.findUnique({
+            where: { email },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              passwordHash: true,
+              role: true,
+            },
+          });
+
+          if (!user) {
+            throw new Error('Credenciais inválidas');
+          }
+
+          // 4. Verificar hash da senha com bcrypt
+          const passwordValid = await compare(password, user.passwordHash);
+          if (!passwordValid) {
+            throw new Error('Credenciais inválidas');
+          }
+
+          // 5. Retornar usuário autenticado
+          resetRateLimit(email); // Login OK — resetar contador
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+          };
+        } catch (error: any) {
+          // Se erro de conexão BD, fazer fallback para variáveis de env
+          if (error.message.includes('Credenciais inválidas')) {
+            throw error;
+          }
+
+          console.warn('Erro ao buscar usuário no BD, usando fallback:', error.message);
+
+          // Fallback: tentar com variáveis de ambiente
+          const adminEmail = process.env.ADMIN_EMAIL;
+          const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+
+          if (!adminEmail || !adminPasswordHash) {
+            throw new Error('Configuração de autenticação incompleta');
+          }
+
+          if (email !== adminEmail) {
+            throw new Error('Credenciais inválidas');
+          }
+
+          const passwordValid = await compare(password, adminPasswordHash);
+          if (!passwordValid) {
+            throw new Error('Credenciais inválidas');
+          }
+
+          resetRateLimit(email);
+          return {
+            id: '1',
+            name: 'Dr. Amorim',
+            email: adminEmail,
+          };
         }
-
-        if (email !== adminEmail) {
-          throw new Error('Credenciais inválidas');
-        }
-
-        // 3. Verificar hash da senha com bcrypt
-        const passwordValid = await compare(password, adminPasswordHash);
-        if (!passwordValid) {
-          throw new Error('Credenciais inválidas');
-        }
-
-        // 5. Retornar usuário autenticado
-        resetRateLimit(email); // Login OK — resetar contador
-        return {
-          id: '1',
-          name: 'Dr. Amorim',
-          email: adminEmail,
-        };
       },
     }),
   ],
