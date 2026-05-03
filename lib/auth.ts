@@ -8,6 +8,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcryptjs';
 import { z } from 'zod';
 import { checkRateLimit, resetRateLimit } from './rate-limit';
+import { prisma } from './db';
 
 // Schema de validação do login
 const loginSchema = z.object({
@@ -44,10 +45,8 @@ export const authOptions: NextAuthOptions = {
           throw new Error(`Muitas tentativas. Tente novamente em ${minutes} minuto(s).`);
         }
 
-        // 3. Buscar usuário no PostgreSQL
+        // 3. Buscar usuário no banco de dados
         try {
-          const { prisma } = require('./db');
-
           const user = await prisma.user.findUnique({
             where: { email },
             select: {
